@@ -12,34 +12,47 @@ design and display dotmatrix font for pygame and Minecraft
 
 [あんずいろapricot×color  なつめもじ](http://www8.plala.or.jp/p_dolce/site3-5.html)
 
-nm.zipを展開して得られたnatumemozi.ttfを、fontsフォルダにコピーして利用する。
+nm.zipを展開して得られたnatumemozi.ttfを、fontsフォルダにコピーしておくこと。
 
-## Python環境
+## Python環境の確認
 
-Python 3.11.9で動作確認済み。
-
-### pyenvがインストールされている場合
-
-Python 3.11.9がない場合は、インストールする。
+Python 3.11.9で動作確認済み。とりあえず、動くか試す。
 
 ```bash
-pyenv install 3.11.9
-pyenv local 3.11.9
+python designer.py
 ```
 
-さらに、以下のコマンドでpygame-ceをインストールする。
+pygameが無い、というエラーが出る場合は、以下のコマンドでインストールする。
 
 ```bash
 pip install pygame-ce
 ```
 
-### pyenvに加え、poetryもインストールされている場合
+pyenv、poetryがインストールされているか、以下のコマンドで確認する。
 
-必要に応じて、以下のコマンドで環境を構築する。
+```bash
+pyenv --version
+poetry --version
+```
+
+pyenvがインストールされているなら、
+pyenvによってPython 3.11.9がインストールされているか確認する。
+
+```bash
+pyenv versions
+```
+
+Python 3.11.9がない場合は、インストールする。
 
 ```bash
 pyenv install 3.11.9
-pyenv local 3.11.9
+```
+
+### pyenvに加え、poetryもインストールされている場合
+
+以下のコマンドで、仮想環境が作成され、その中にpygame-ceがインストールされる。
+
+```bash
 poetry install
 ```
 
@@ -53,6 +66,14 @@ source .venv/bin/activate
 あとは、VS Codeが使用するPythonインタープリターを、この仮想環境に設定する。
 Pythonファイルを開いている状態で、ウィンドウの下部にPython 3.11.9 ('.venv': Poetry)と表示されていればOK。違う場合は、クリックして選択する。
 ![仮想環境の設定](images/vscode.png)
+
+### poetryはないが、pyenvがインストールされている場合
+
+以下のコマンドでpygame-ceをインストールする。一番最初に試した時にインストール済みだったら、この手順は不要。
+
+```bash
+pip install pygame-ce
+```
 
 ## 概要
 
