@@ -33,6 +33,10 @@ pygame.init()
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption('Dotmatrix Font Designer')
 
+# フレームレートの設定
+clock = pygame.time.Clock()
+FPS = 20
+
 # 色の定義
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -323,5 +327,7 @@ while RUNNING:
 
     # 画面の更新
     pygame.display.flip()
+    # フレームレートの制御
+    clock.tick(FPS)
 
 pygame.quit()
