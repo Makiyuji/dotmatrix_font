@@ -180,8 +180,6 @@ while RUNNING:
             if cond1 and cond2:
                 c = (mouse_x - DESIGN_CHAR_X) // LARGE_DOT_INTV
                 r = (mouse_y - DESIGN_CHAR_Y) // LARGE_DOT_INTV
-                if design_char_data == ['0' * COLS for _ in range(ROWS)]:
-                    design_char_data = font_data[DESIGN_CHAR_INDEX * ROWS:(DESIGN_CHAR_INDEX + 1) * ROWS]
                 new_row = list(design_char_data[r])
                 if SHIFT_PRESSED:
                     new_row[c] = '0'
@@ -214,8 +212,6 @@ while RUNNING:
             if cond1 and cond2:
                 c = (mouse_x - DESIGN_CHAR_X) // LARGE_DOT_INTV
                 r = (mouse_y - DESIGN_CHAR_Y) // LARGE_DOT_INTV
-                if design_char_data == ['0' * COLS for _ in range(ROWS)]:
-                    design_char_data = font_data[DESIGN_CHAR_INDEX * ROWS:(DESIGN_CHAR_INDEX + 1) * ROWS]
                 new_row = list(design_char_data[r])
                 if SHIFT_PRESSED:
                     new_row[c] = '0'
