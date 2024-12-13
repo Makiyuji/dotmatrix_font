@@ -1,5 +1,4 @@
 # Dotmatrix Font Designer
-# 詳細な仕様、使いかたは、how_to_use_designer.mdを参照のこと。
 
 import os
 import shutil
@@ -56,8 +55,13 @@ SAVE_MESSAGE_STAY = 1500
 # 参照用文字とデザイン用文字の表示位置
 REF_CHAR_X = (WINDOW_WIDTH // 4) - (COLS * LARGE_DOT_INTV // 2)
 REF_CHAR_Y = WINDOW_HEIGHT - 200
+
+# デザイン領域の設定
 DESIGN_CHAR_X = (3 * WINDOW_WIDTH // 4) - (COLS * LARGE_DOT_INTV // 2)
 DESIGN_CHAR_Y = WINDOW_HEIGHT - 200
+
+# DESIGN_CHAR_INDEXの初期化
+DESIGN_CHAR_INDEX = 0
 
 # 矢印アイコンの読み込み
 arrow_image = pygame.image.load('images/right_arrow.png')
@@ -95,41 +99,45 @@ blue_selection = [0, 0]
 red_selection = [0, 0]
 
 # デザイン用文字の一時データ
-design_char_data = ['0' * COLS for _ in range(ROWS)]
+design_char_data = font_data[DESIGN_CHAR_INDEX * ROWS:(DESIGN_CHAR_INDEX + 1) * ROWS]
+
+# クリック状態の追跡
+MOUSE_DOWN = False
+SHIFT_PRESSED = False
 
 # メインループ
-RUNNING = True
 SAVE_MESSAGE_TIME = 0
+RUNNING = True
 while RUNNING:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             RUNNING = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w:
-                blue_selection[1] = max(0, blue_selection[1] - 1)
+                blue_selection[1] = (blue_selection[1] - 1) % DISPLAY_ROWS
             elif event.key == pygame.K_s:
-                blue_selection[1] = min(DISPLAY_ROWS - 1, blue_selection[1] + 1)
+                blue_selection[1] = (blue_selection[1] + 1) % DISPLAY_ROWS
             elif event.key == pygame.K_a:
-                blue_selection[0] = max(0, blue_selection[0] - 1)
+                blue_selection[0] = (blue_selection[0] - 1) % DISPLAY_COLS
             elif event.key == pygame.K_d:
-                blue_selection[0] = min(DISPLAY_COLS - 1, blue_selection[0] + 1)
+                blue_selection[0] = (blue_selection[0] + 1) % DISPLAY_COLS
             elif event.key == pygame.K_UP:
-                red_selection[1] = max(0, red_selection[1] - 1)
+                red_selection[1] = (red_selection[1] - 1) % DISPLAY_ROWS
                 DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
                 if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
                     design_char_data = font_data[DESIGN_CHAR_INDEX * ROWS:(DESIGN_CHAR_INDEX + 1) * ROWS]
             elif event.key == pygame.K_DOWN:
-                red_selection[1] = min(DISPLAY_ROWS - 1, red_selection[1] + 1)
+                red_selection[1] = (red_selection[1] + 1) % DISPLAY_ROWS
                 DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
                 if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
                     design_char_data = font_data[DESIGN_CHAR_INDEX * ROWS:(DESIGN_CHAR_INDEX + 1) * ROWS]
             elif event.key == pygame.K_LEFT:
-                red_selection[0] = max(0, red_selection[0] - 1)
+                red_selection[0] = (red_selection[0] - 1) % DISPLAY_COLS
                 DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
                 if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
                     design_char_data = font_data[DESIGN_CHAR_INDEX * ROWS:(DESIGN_CHAR_INDEX + 1) * ROWS]
             elif event.key == pygame.K_RIGHT:
-                red_selection[0] = min(DISPLAY_COLS - 1, red_selection[0] + 1)
+                red_selection[0] = (red_selection[0] + 1) % DISPLAY_COLS
                 DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
                 if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
                     design_char_data = font_data[DESIGN_CHAR_INDEX * ROWS:(DESIGN_CHAR_INDEX + 1) * ROWS]
@@ -138,21 +146,46 @@ while RUNNING:
                 DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
                 if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
                     font_data[DESIGN_CHAR_INDEX * ROWS:(DESIGN_CHAR_INDEX + 1) * ROWS] = design_char_data[:]
+            elif event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
+                SHIFT_PRESSED = True
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
+                SHIFT_PRESSED = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
+            MOUSE_DOWN = True
             mouse_x, mouse_y = event.pos
+            cond1 = 0 <= mouse_x < DISPLAY_COLS * DISPLAY_COL_INTV
+            cond2 = 0 <= mouse_y < DISPLAY_ROWS * DISPLAY_ROW_INTV
+            if event.button == 1:  # 左クリック
+                if SHIFT_PRESSED:
+                    # 参照用文字の指定
+                    if cond1 and cond2:
+                        blue_selection[0] = mouse_x // DISPLAY_COL_INTV
+                        blue_selection[1] = mouse_y // DISPLAY_ROW_INTV
+                else:
+                    # デザイン用文字の指定
+                    if cond1 and cond2:
+                        red_selection[0] = mouse_x // DISPLAY_COL_INTV
+                        red_selection[1] = mouse_y // DISPLAY_ROW_INTV
+                        DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
+                        if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
+                            design_char_data = font_data[DESIGN_CHAR_INDEX * ROWS:(DESIGN_CHAR_INDEX + 1) * ROWS]
+            # デザイン領域のクリック処理
             cond1 = DESIGN_CHAR_X <= mouse_x < DESIGN_CHAR_X + COLS * LARGE_DOT_INTV
             cond2 = DESIGN_CHAR_Y <= mouse_y < DESIGN_CHAR_Y + ROWS * LARGE_DOT_INTV
             if cond1 and cond2:
                 c = (mouse_x - DESIGN_CHAR_X) // LARGE_DOT_INTV
                 r = (mouse_y - DESIGN_CHAR_Y) // LARGE_DOT_INTV
-                DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
-                if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
-                    if design_char_data == ['0' * COLS for _ in range(ROWS)]:
-                        design_char_data = font_data[DESIGN_CHAR_INDEX * ROWS:(DESIGN_CHAR_INDEX + 1) * ROWS]
-                    new_row = list(design_char_data[r])
-                    new_row[c] = '0' if new_row[c] == '1' else '1'
-                    design_char_data[r] = ''.join(new_row)
-            elif arrow_rect.collidepoint(mouse_x, mouse_y):
+                if design_char_data == ['0' * COLS for _ in range(ROWS)]:
+                    design_char_data = font_data[DESIGN_CHAR_INDEX * ROWS:(DESIGN_CHAR_INDEX + 1) * ROWS]
+                new_row = list(design_char_data[r])
+                if SHIFT_PRESSED:
+                    new_row[c] = '0'
+                else:
+                    new_row[c] = '1'
+                design_char_data[r] = ''.join(new_row)
+            # アイコンのクリック処理
+            if arrow_rect.collidepoint(mouse_x, mouse_y):
                 # 矢印アイコンがクリックされた場合、参照用文字をデザイン用文字にコピー
                 REF_CHAR_INDEX = blue_selection[1] * DISPLAY_COLS + blue_selection[0]
                 if REF_CHAR_INDEX < (0x7F - 0x20 + 1):
@@ -168,6 +201,23 @@ while RUNNING:
                     for line in font_data:
                         f.write(line + '\n')
                 SAVE_MESSAGE_TIME = pygame.time.get_ticks()
+        elif event.type == pygame.MOUSEBUTTONUP:
+            MOUSE_DOWN = False
+        elif event.type == pygame.MOUSEMOTION and MOUSE_DOWN:
+            mouse_x, mouse_y = event.pos
+            cond1 = DESIGN_CHAR_X <= mouse_x < DESIGN_CHAR_X + COLS * LARGE_DOT_INTV
+            cond2 = DESIGN_CHAR_Y <= mouse_y < DESIGN_CHAR_Y + ROWS * LARGE_DOT_INTV
+            if cond1 and cond2:
+                c = (mouse_x - DESIGN_CHAR_X) // LARGE_DOT_INTV
+                r = (mouse_y - DESIGN_CHAR_Y) // LARGE_DOT_INTV
+                if design_char_data == ['0' * COLS for _ in range(ROWS)]:
+                    design_char_data = font_data[DESIGN_CHAR_INDEX * ROWS:(DESIGN_CHAR_INDEX + 1) * ROWS]
+                new_row = list(design_char_data[r])
+                if SHIFT_PRESSED:
+                    new_row[c] = '0'
+                else:
+                    new_row[c] = '1'
+                design_char_data[r] = ''.join(new_row)
 
     # 画面のクリア
     screen.fill(LAVENDER)
