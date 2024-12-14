@@ -5,10 +5,24 @@ import shutil
 import pygame
 import pygame.freetype
 
+# コード範囲の定数
+CODE_OFFSET = 0x00
+CODE_START = 0x00
+CODE_END = 0xFF
+CODE_LENGTH = CODE_END - CODE_START + 1
+
+# 表示領域の設定
+DISPLAY_COLS = 16
+DISPLAY_ROWS = CODE_LENGTH // DISPLAY_COLS
+
+# 文字数がDISPLAY_COLSの倍数でない場合、文字数を増やす
+if CODE_LENGTH % DISPLAY_COLS != 0:
+    CODE_LENGTH = DISPLAY_COLS * (CODE_LENGTH // DISPLAY_COLS + 1)
+
 # ドットマトリクスの設定
-SMALL_DOT_SIZE = 6
+SMALL_DOT_SIZE = 4
 LARGE_DOT_SIZE = 16
-SMALL_MARGIN = 2
+SMALL_MARGIN = 1
 LARGE_MARGIN = 4
 WINDOW_MARGIN = 8
 DISPLAY_COL_MARGIN = 6
@@ -20,13 +34,9 @@ LARGE_DOT_INTV = LARGE_DOT_SIZE + LARGE_MARGIN
 DISPLAY_COL_INTV = COLS * SMALL_DOT_INTV + DISPLAY_COL_MARGIN
 DISPLAY_ROW_INTV = ROWS * SMALL_DOT_INTV + DISPLAY_ROW_MARGIN
 
-# 表示領域の設定
-DISPLAY_ROWS = 6
-DISPLAY_COLS = 16
-
 # 画面の設定
 WINDOW_WIDTH = DISPLAY_COLS * DISPLAY_COL_INTV - DISPLAY_COL_MARGIN + WINDOW_MARGIN * 2
-WINDOW_HEIGHT = 660
+WINDOW_HEIGHT = DISPLAY_ROWS * DISPLAY_ROW_INTV - DISPLAY_ROW_MARGIN + WINDOW_MARGIN * 2 + 260
 
 # 初期化
 pygame.init()
@@ -67,6 +77,26 @@ DESIGN_CHAR_Y = WINDOW_HEIGHT - 200
 # DESIGN_CHAR_INDEXの初期化
 DESIGN_CHAR_INDEX = 0
 
+# 初期データの読み込みまたは初期化
+FONT_FILE = 'font.txt'
+BACKUP_FILE = 'font.txt.bak'
+if os.path.exists(FONT_FILE):
+    shutil.copy(FONT_FILE, BACKUP_FILE)  # バックアップを作成
+    with open(FONT_FILE, 'r', encoding='utf-8') as f:
+        font_data = f.read().splitlines()
+    # 空のデータを挿入
+    if CODE_OFFSET > CODE_START:
+        empty_data = ['0' * COLS for _ in range(ROWS * (CODE_OFFSET - CODE_START))]
+        font_data = empty_data + font_data
+    elif CODE_OFFSET < CODE_START:
+        font_data = font_data[(CODE_START - CODE_OFFSET) * ROWS:]
+else:
+    font_data = ['0' * COLS for _ in range(ROWS * CODE_LENGTH)]
+
+# データが不足している場合の初期化
+if len(font_data) < ROWS * CODE_LENGTH:
+    font_data.extend(['0' * COLS for _ in range(ROWS * CODE_LENGTH - len(font_data))])
+
 
 # デザイン用文字のスライスを取得する関数
 def get_design_char_data(index):
@@ -93,20 +123,6 @@ pencil_rect.topleft = (DESIGN_CHAR_X + COLS * LARGE_DOT_INTV + 10,
 check_image = pygame.image.load('images/check.png')
 check_rect = check_image.get_rect()
 check_rect.center = (arrow_rect.centerx, arrow_rect.centery - arrow_rect.height)
-
-# 初期データの読み込みまたは初期化
-FONT_FILE = 'font.txt'
-BACKUP_FILE = 'font.txt.bak'
-if os.path.exists(FONT_FILE):
-    shutil.copy(FONT_FILE, BACKUP_FILE)  # バックアップを作成
-    with open(FONT_FILE, 'r', encoding='utf-8') as f:
-        font_data = f.read().splitlines()
-else:
-    font_data = ['0' * COLS for _ in range(ROWS * (0x7F - 0x20 + 1))]
-
-# データが不足している場合の初期化
-if len(font_data) < ROWS * (0x7F - 0x20 + 1):
-    font_data.extend(['0' * COLS for _ in range(ROWS * (0x7F - 0x20de + 1) - len(font_data))])
 
 # 選択状態の初期化
 blue_selection = [0, 0]
@@ -138,27 +154,27 @@ while RUNNING:
             elif event.key == pygame.K_UP:
                 red_selection[1] = (red_selection[1] - 1) % DISPLAY_ROWS
                 DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
-                if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
+                if DESIGN_CHAR_INDEX < CODE_LENGTH:
                     design_char_data = get_design_char_data(DESIGN_CHAR_INDEX)
             elif event.key == pygame.K_DOWN:
                 red_selection[1] = (red_selection[1] + 1) % DISPLAY_ROWS
                 DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
-                if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
+                if DESIGN_CHAR_INDEX < CODE_LENGTH:
                     design_char_data = get_design_char_data(DESIGN_CHAR_INDEX)
             elif event.key == pygame.K_LEFT:
                 red_selection[0] = (red_selection[0] - 1) % DISPLAY_COLS
                 DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
-                if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
+                if DESIGN_CHAR_INDEX < CODE_LENGTH:
                     design_char_data = get_design_char_data(DESIGN_CHAR_INDEX)
             elif event.key == pygame.K_RIGHT:
                 red_selection[0] = (red_selection[0] + 1) % DISPLAY_COLS
                 DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
-                if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
+                if DESIGN_CHAR_INDEX < CODE_LENGTH:
                     design_char_data = get_design_char_data(DESIGN_CHAR_INDEX)
             elif event.key == pygame.K_RETURN:
                 # エンターキーでデザイン用文字の変更を表示領域に反映
                 DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
-                if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
+                if DESIGN_CHAR_INDEX < CODE_LENGTH:
                     set_design_char_data(DESIGN_CHAR_INDEX, design_char_data)
             elif event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
                 SHIFT_PRESSED = True
@@ -182,7 +198,7 @@ while RUNNING:
                         red_selection[0] = mouse_x // DISPLAY_COL_INTV
                         red_selection[1] = mouse_y // DISPLAY_ROW_INTV
                         DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
-                        if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
+                        if DESIGN_CHAR_INDEX < CODE_LENGTH:
                             design_char_data = get_design_char_data(DESIGN_CHAR_INDEX)
             # デザイン領域のクリック処理
             cond1 = DESIGN_CHAR_X <= mouse_x < DESIGN_CHAR_X + COLS * LARGE_DOT_INTV
@@ -200,18 +216,20 @@ while RUNNING:
             if arrow_rect.collidepoint(mouse_x, mouse_y):
                 # 矢印アイコンがクリックされた場合、参照用文字をデザイン用文字にコピー
                 REF_CHAR_INDEX = blue_selection[1] * DISPLAY_COLS + blue_selection[0]
-                if REF_CHAR_INDEX < (0x7F - 0x20 + 1):
+                if REF_CHAR_INDEX < CODE_LENGTH:
                     design_char_data = get_design_char_data(REF_CHAR_INDEX)
             elif pencil_rect.collidepoint(mouse_x, mouse_y):
                 # 鉛筆アイコンがクリックされた場合、デザイン用文字の変更を表示領域に反映
                 DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
-                if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
+                if DESIGN_CHAR_INDEX < CODE_LENGTH:
                     set_design_char_data(DESIGN_CHAR_INDEX, design_char_data)
             elif check_rect.collidepoint(mouse_x, mouse_y):
                 # チェックマークアイコンがクリックされた場合、表示領域の全てのデータをfont.txtに書き出し
                 with open(FONT_FILE, 'w', encoding='utf-8') as f:
-                    for line in font_data:
-                        f.write(line + '\n')
+                    for i in range(CODE_LENGTH):
+                        char_data = get_design_char_data(i)
+                        for line in char_data:
+                            f.write(line + '\n')
                 SAVE_MESSAGE_TIME = pygame.time.get_ticks()
         elif event.type == pygame.MOUSEBUTTONUP:
             MOUSE_DOWN = False
@@ -236,7 +254,7 @@ while RUNNING:
     for row in range(DISPLAY_ROWS):
         for col in range(DISPLAY_COLS):
             char_index = row * DISPLAY_COLS + col
-            if char_index < (0x7F - 0x20 + 1):
+            if char_index < CODE_LENGTH:
                 char_data = font_data[char_index * ROWS:(char_index + 1) * ROWS]
                 for r in range(ROWS):
                     for c in range(COLS):
@@ -264,7 +282,7 @@ while RUNNING:
 
     # 参照用文字の描画（左下）
     REF_CHAR_INDEX = blue_selection[1] * DISPLAY_COLS + blue_selection[0]
-    if REF_CHAR_INDEX < (0x7F - 0x20 + 1):
+    if REF_CHAR_INDEX < CODE_LENGTH:
         ref_char_data = font_data[REF_CHAR_INDEX * ROWS:(REF_CHAR_INDEX + 1) * ROWS]
         for r in range(ROWS):
             for c in range(COLS):
@@ -292,8 +310,8 @@ while RUNNING:
     screen.blit(check_image, check_rect)
 
     # 現在選択されているコードの表示
-    ref_code = f"0x{0x20 + blue_selection[1] * DISPLAY_COLS + blue_selection[0]:02X}"
-    design_code = f"0x{0x20 + red_selection[1] * DISPLAY_COLS + red_selection[0]:02X}"
+    ref_code = f"0x{CODE_START + blue_selection[1] * DISPLAY_COLS + blue_selection[0]:02X}"
+    design_code = f"0x{CODE_START + red_selection[1] * DISPLAY_COLS + red_selection[0]:02X}"
     ref_code_surface, _ = font1.render(ref_code, BLACK, None)
     design_code_surface, _ = font1.render(design_code, BLACK, None)
     screen.blit(ref_code_surface, (REF_CHAR_X + 24, REF_CHAR_Y + ROWS * LARGE_DOT_INTV + 10))
@@ -314,10 +332,10 @@ while RUNNING:
     screen.blit(s_surface, (REF_CHAR_X - 40, REF_CHAR_Y + 100))
     screen.blit(d_surface, (REF_CHAR_X - 20, REF_CHAR_Y + 100))
 
-    screen.blit(up_surface, (DESIGN_CHAR_X + COLS * LARGE_DOT_INTV + 20, DESIGN_CHAR_Y + 70))
+    screen.blit(up_surface, (DESIGN_CHAR_X + COLS * LARGE_DOT_INTV + 34, DESIGN_CHAR_Y + 70))
     screen.blit(left_surface, (DESIGN_CHAR_X + COLS * LARGE_DOT_INTV, DESIGN_CHAR_Y + 100))
-    screen.blit(down_surface, (DESIGN_CHAR_X + COLS * LARGE_DOT_INTV + 20, DESIGN_CHAR_Y + 100))
-    screen.blit(right_surface, (DESIGN_CHAR_X + COLS * LARGE_DOT_INTV + 40, DESIGN_CHAR_Y + 100))
+    screen.blit(down_surface, (DESIGN_CHAR_X + COLS * LARGE_DOT_INTV + 34, DESIGN_CHAR_Y + 100))
+    screen.blit(right_surface, (DESIGN_CHAR_X + COLS * LARGE_DOT_INTV + 54, DESIGN_CHAR_Y + 100))
 
     # 保存メッセージの表示
     if SAVE_MESSAGE_TIME and pygame.time.get_ticks() - SAVE_MESSAGE_TIME < SAVE_MESSAGE_STAY:
