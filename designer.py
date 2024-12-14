@@ -8,7 +8,7 @@ import pygame.freetype
 # コード範囲の定数
 CODE_OFFSET = 0x00
 CODE_START = 0x00
-CODE_END = 0xFF
+CODE_END = 0x7F
 CODE_LENGTH = CODE_END - CODE_START + 1
 
 # 表示領域の設定
