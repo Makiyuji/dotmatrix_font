@@ -67,6 +67,16 @@ DESIGN_CHAR_Y = WINDOW_HEIGHT - 200
 # DESIGN_CHAR_INDEXの初期化
 DESIGN_CHAR_INDEX = 0
 
+
+# デザイン用文字のスライスを取得する関数
+def get_design_char_data(index):
+    return font_data[index * ROWS:(index + 1) * ROWS]
+
+
+def set_design_char_data(index, data):
+    font_data[index * ROWS:(index + 1) * ROWS] = data
+
+
 # 矢印アイコンの読み込み
 arrow_image = pygame.image.load('images/right_arrow.png')
 arrow_rect = arrow_image.get_rect()
@@ -96,7 +106,7 @@ else:
 
 # データが不足している場合の初期化
 if len(font_data) < ROWS * (0x7F - 0x20 + 1):
-    font_data.extend(['0' * COLS for _ in range(ROWS * (0x7F - 0x20 + 1) - len(font_data))])
+    font_data.extend(['0' * COLS for _ in range(ROWS * (0x7F - 0x20de + 1) - len(font_data))])
 
 # 選択状態の初期化
 blue_selection = [0, 0]
@@ -129,27 +139,27 @@ while RUNNING:
                 red_selection[1] = (red_selection[1] - 1) % DISPLAY_ROWS
                 DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
                 if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
-                    design_char_data = font_data[DESIGN_CHAR_INDEX * ROWS:(DESIGN_CHAR_INDEX + 1) * ROWS]
+                    design_char_data = get_design_char_data(DESIGN_CHAR_INDEX)
             elif event.key == pygame.K_DOWN:
                 red_selection[1] = (red_selection[1] + 1) % DISPLAY_ROWS
                 DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
                 if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
-                    design_char_data = font_data[DESIGN_CHAR_INDEX * ROWS:(DESIGN_CHAR_INDEX + 1) * ROWS]
+                    design_char_data = get_design_char_data(DESIGN_CHAR_INDEX)
             elif event.key == pygame.K_LEFT:
                 red_selection[0] = (red_selection[0] - 1) % DISPLAY_COLS
                 DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
                 if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
-                    design_char_data = font_data[DESIGN_CHAR_INDEX * ROWS:(DESIGN_CHAR_INDEX + 1) * ROWS]
+                    design_char_data = get_design_char_data(DESIGN_CHAR_INDEX)
             elif event.key == pygame.K_RIGHT:
                 red_selection[0] = (red_selection[0] + 1) % DISPLAY_COLS
                 DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
                 if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
-                    design_char_data = font_data[DESIGN_CHAR_INDEX * ROWS:(DESIGN_CHAR_INDEX + 1) * ROWS]
+                    design_char_data = get_design_char_data(DESIGN_CHAR_INDEX)
             elif event.key == pygame.K_RETURN:
                 # エンターキーでデザイン用文字の変更を表示領域に反映
                 DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
                 if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
-                    font_data[DESIGN_CHAR_INDEX * ROWS:(DESIGN_CHAR_INDEX + 1) * ROWS] = design_char_data[:]
+                    set_design_char_data(DESIGN_CHAR_INDEX, design_char_data)
             elif event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
                 SHIFT_PRESSED = True
         elif event.type == pygame.KEYUP:
@@ -173,7 +183,7 @@ while RUNNING:
                         red_selection[1] = mouse_y // DISPLAY_ROW_INTV
                         DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
                         if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
-                            design_char_data = font_data[DESIGN_CHAR_INDEX * ROWS:(DESIGN_CHAR_INDEX + 1) * ROWS]
+                            design_char_data = get_design_char_data(DESIGN_CHAR_INDEX)
             # デザイン領域のクリック処理
             cond1 = DESIGN_CHAR_X <= mouse_x < DESIGN_CHAR_X + COLS * LARGE_DOT_INTV
             cond2 = DESIGN_CHAR_Y <= mouse_y < DESIGN_CHAR_Y + ROWS * LARGE_DOT_INTV
@@ -191,12 +201,12 @@ while RUNNING:
                 # 矢印アイコンがクリックされた場合、参照用文字をデザイン用文字にコピー
                 REF_CHAR_INDEX = blue_selection[1] * DISPLAY_COLS + blue_selection[0]
                 if REF_CHAR_INDEX < (0x7F - 0x20 + 1):
-                    design_char_data = font_data[REF_CHAR_INDEX * ROWS:(REF_CHAR_INDEX + 1) * ROWS]
+                    design_char_data = get_design_char_data(REF_CHAR_INDEX)
             elif pencil_rect.collidepoint(mouse_x, mouse_y):
                 # 鉛筆アイコンがクリックされた場合、デザイン用文字の変更を表示領域に反映
                 DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
                 if DESIGN_CHAR_INDEX < (0x7F - 0x20 + 1):
-                    font_data[DESIGN_CHAR_INDEX * ROWS:(DESIGN_CHAR_INDEX + 1) * ROWS] = design_char_data[:]
+                    set_design_char_data(DESIGN_CHAR_INDEX, design_char_data)
             elif check_rect.collidepoint(mouse_x, mouse_y):
                 # チェックマークアイコンがクリックされた場合、表示領域の全てのデータをfont.txtに書き出し
                 with open(FONT_FILE, 'w', encoding='utf-8') as f:
