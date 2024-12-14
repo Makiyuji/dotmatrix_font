@@ -27,8 +27,8 @@ LARGE_MARGIN = 4
 WINDOW_MARGIN = 8
 DISPLAY_COL_MARGIN = 6
 DISPLAY_ROW_MARGIN = 6
-ROWS = 7
 COLS = 5
+ROWS = 7
 SMALL_DOT_INTV = SMALL_DOT_SIZE + SMALL_MARGIN
 LARGE_DOT_INTV = LARGE_DOT_SIZE + LARGE_MARGIN
 DISPLAY_COL_INTV = COLS * SMALL_DOT_INTV + DISPLAY_COL_MARGIN
@@ -36,7 +36,9 @@ DISPLAY_ROW_INTV = ROWS * SMALL_DOT_INTV + DISPLAY_ROW_MARGIN
 
 # 画面の設定
 WINDOW_WIDTH = DISPLAY_COLS * DISPLAY_COL_INTV - DISPLAY_COL_MARGIN + WINDOW_MARGIN * 2
-WINDOW_HEIGHT = DISPLAY_ROWS * DISPLAY_ROW_INTV - DISPLAY_ROW_MARGIN + WINDOW_MARGIN * 2 + 260
+if WINDOW_WIDTH < 500:
+    WINDOW_WIDTH = 500
+WINDOW_HEIGHT = DISPLAY_ROWS * DISPLAY_ROW_INTV - DISPLAY_ROW_MARGIN + WINDOW_MARGIN * 2 + ROWS * LARGE_DOT_INTV + 80
 
 # 初期化
 pygame.init()
@@ -67,12 +69,12 @@ large_font = pygame.freetype.Font(FONT_PATH, 48)
 SAVE_MESSAGE_STAY = 1500
 
 # 参照用文字とデザイン用文字の表示位置
-REF_CHAR_X = (WINDOW_WIDTH // 4) - (COLS * LARGE_DOT_INTV // 2)
-REF_CHAR_Y = WINDOW_HEIGHT - 200
+REF_CHAR_X = (WINDOW_WIDTH // 3) - (COLS * LARGE_DOT_INTV // 2)
+REF_CHAR_Y = WINDOW_HEIGHT - 40 - ROWS * LARGE_DOT_INTV
 
 # デザイン領域の設定
-DESIGN_CHAR_X = (3 * WINDOW_WIDTH // 4) - (COLS * LARGE_DOT_INTV // 2)
-DESIGN_CHAR_Y = WINDOW_HEIGHT - 200
+DESIGN_CHAR_X = (2 * WINDOW_WIDTH // 3) - (COLS * LARGE_DOT_INTV // 2) + LARGE_MARGIN
+DESIGN_CHAR_Y = WINDOW_HEIGHT - 40 - ROWS * LARGE_DOT_INTV
 
 # DESIGN_CHAR_INDEXの初期化
 DESIGN_CHAR_INDEX = 0
@@ -113,16 +115,16 @@ arrow_rect = arrow_image.get_rect()
 arrow_rect.center = (WINDOW_WIDTH // 2,
                      REF_CHAR_Y + (ROWS * LARGE_DOT_INTV) // 2)
 
+# チェックマークアイコンの読み込み
+check_image = pygame.image.load('images/check.png')
+check_rect = check_image.get_rect()
+check_rect.center = (arrow_rect.centerx, arrow_rect.centery - arrow_rect.height)
+
 # 鉛筆アイコンの読み込み
 pencil_image = pygame.image.load('images/pencil.png')
 pencil_rect = pencil_image.get_rect()
 pencil_rect.topleft = (DESIGN_CHAR_X + COLS * LARGE_DOT_INTV + 10,
                        DESIGN_CHAR_Y)
-
-# チェックマークアイコンの読み込み
-check_image = pygame.image.load('images/check.png')
-check_rect = check_image.get_rect()
-check_rect.center = (arrow_rect.centerx, arrow_rect.centery - arrow_rect.height)
 
 # 選択状態の初期化
 blue_selection = [0, 0]
@@ -342,7 +344,7 @@ while RUNNING:
         save_message_surface, _ = font1.render("デザインをfont.txtに保存しました。",
                                                BLACK, None)
         screen.blit(save_message_surface,
-                    (WINDOW_WIDTH // 2 - save_message_surface.get_width() // 2, check_rect.top - 50))
+                    (WINDOW_WIDTH // 2 - save_message_surface.get_width() // 2, DESIGN_CHAR_Y - 40))
     else:
         SAVE_MESSAGE_TIME = 0
 
