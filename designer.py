@@ -284,10 +284,8 @@ while RUNNING:
     # 現在選択されているコードの表示
     ref_code = f"0x{0x20 + blue_selection[1] * DISPLAY_COLS + blue_selection[0]:02X}"
     design_code = f"0x{0x20 + red_selection[1] * DISPLAY_COLS + red_selection[0]:02X}"
-    ref_code_surface, _ = font1.render(ref_code, BLACK, None,
-                                       pygame.freetype.STYLE_DEFAULT, True)
-    design_code_surface, _ = font1.render(design_code, BLACK, None,
-                                          pygame.freetype.STYLE_DEFAULT, True)
+    ref_code_surface, _ = font1.render(ref_code, BLACK, None)
+    design_code_surface, _ = font1.render(design_code, BLACK, None)
     screen.blit(ref_code_surface, (REF_CHAR_X + 24, REF_CHAR_Y + ROWS * LARGE_DOT_INTV + 10))
     screen.blit(design_code_surface, (DESIGN_CHAR_X + 24, DESIGN_CHAR_Y + ROWS * LARGE_DOT_INTV + 10))
 
@@ -314,8 +312,7 @@ while RUNNING:
     # 保存メッセージの表示
     if SAVE_MESSAGE_TIME and pygame.time.get_ticks() - SAVE_MESSAGE_TIME < SAVE_MESSAGE_STAY:
         save_message_surface, _ = font1.render("デザインをfont.txtに保存しました。",
-                                               BLACK, None,
-                                               pygame.freetype.STYLE_DEFAULT, True)
+                                               BLACK, None)
         screen.blit(save_message_surface,
                     (WINDOW_WIDTH // 2 - save_message_surface.get_width() // 2, check_rect.top - 50))
     else:
