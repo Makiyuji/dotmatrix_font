@@ -144,7 +144,12 @@ while RUNNING:
         if event.type == pygame.QUIT:
             RUNNING = False
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_w:
+            if event.key == pygame.K_RETURN:
+                # エンターキーでデザイン用文字の変更を表示領域に反映
+                DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
+                if DESIGN_CHAR_INDEX < CODE_LENGTH:
+                    set_design_char_data(DESIGN_CHAR_INDEX, design_char_data)
+            elif event.key == pygame.K_w:
                 blue_selection[1] = (blue_selection[1] - 1) % DISPLAY_ROWS
             elif event.key == pygame.K_s:
                 blue_selection[1] = (blue_selection[1] + 1) % DISPLAY_ROWS
@@ -172,11 +177,6 @@ while RUNNING:
                 DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
                 if DESIGN_CHAR_INDEX < CODE_LENGTH:
                     design_char_data = get_design_char_data(DESIGN_CHAR_INDEX)
-            elif event.key == pygame.K_RETURN:
-                # エンターキーでデザイン用文字の変更を表示領域に反映
-                DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
-                if DESIGN_CHAR_INDEX < CODE_LENGTH:
-                    set_design_char_data(DESIGN_CHAR_INDEX, design_char_data)
             elif event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
                 SHIFT_PRESSED = True
         elif event.type == pygame.KEYUP:
@@ -321,24 +321,24 @@ while RUNNING:
     screen.blit(design_code_surface, design_code_rect)
 
     # キーガイドの表示
-    w_surface, _ = font1.render("W", BLACK, None)
-    a_surface, _ = font1.render("A", BLACK, None)
-    s_surface, _ = font1.render("S", BLACK, None)
-    d_surface, _ = font1.render("D", BLACK, None)
-    up_surface, _ = font1.render("↑", BLACK, None)
-    left_surface, _ = font1.render("←", BLACK, None)
-    down_surface, _ = font1.render("↓", BLACK, None)
-    right_surface, _ = font1.render("→", BLACK, None)
+    # w_surface, _ = font1.render("W", BLACK, None)
+    # a_surface, _ = font1.render("A", BLACK, None)
+    # s_surface, _ = font1.render("S", BLACK, None)
+    # d_surface, _ = font1.render("D", BLACK, None)
+    # up_surface, _ = font1.render("↑", BLACK, None)
+    # left_surface, _ = font1.render("←", BLACK, None)
+    # down_surface, _ = font1.render("↓", BLACK, None)
+    # right_surface, _ = font1.render("→", BLACK, None)
 
-    screen.blit(w_surface, (REF_CHAR_X - 40, REF_CHAR_Y + 70))
-    screen.blit(a_surface, (REF_CHAR_X - 60, REF_CHAR_Y + 100))
-    screen.blit(s_surface, (REF_CHAR_X - 40, REF_CHAR_Y + 100))
-    screen.blit(d_surface, (REF_CHAR_X - 20, REF_CHAR_Y + 100))
+    # screen.blit(w_surface, (REF_CHAR_X - 40, REF_CHAR_Y + 70))
+    # screen.blit(a_surface, (REF_CHAR_X - 60, REF_CHAR_Y + 100))
+    # screen.blit(s_surface, (REF_CHAR_X - 40, REF_CHAR_Y + 100))
+    # screen.blit(d_surface, (REF_CHAR_X - 20, REF_CHAR_Y + 100))
 
-    screen.blit(up_surface, (DESIGN_CHAR_X + COLS * LARGE_DOT_INTV + 34, DESIGN_CHAR_Y + 70))
-    screen.blit(left_surface, (DESIGN_CHAR_X + COLS * LARGE_DOT_INTV, DESIGN_CHAR_Y + 100))
-    screen.blit(down_surface, (DESIGN_CHAR_X + COLS * LARGE_DOT_INTV + 34, DESIGN_CHAR_Y + 100))
-    screen.blit(right_surface, (DESIGN_CHAR_X + COLS * LARGE_DOT_INTV + 54, DESIGN_CHAR_Y + 100))
+    # screen.blit(up_surface, (DESIGN_CHAR_X + COLS * LARGE_DOT_INTV + 34, DESIGN_CHAR_Y + 70))
+    # screen.blit(left_surface, (DESIGN_CHAR_X + COLS * LARGE_DOT_INTV, DESIGN_CHAR_Y + 100))
+    # screen.blit(down_surface, (DESIGN_CHAR_X + COLS * LARGE_DOT_INTV + 34, DESIGN_CHAR_Y + 100))
+    # screen.blit(right_surface, (DESIGN_CHAR_X + COLS * LARGE_DOT_INTV + 54, DESIGN_CHAR_Y + 100))
 
     # 保存メッセージの表示
     if SAVE_MESSAGE_TIME and pygame.time.get_ticks() - SAVE_MESSAGE_TIME < SAVE_MESSAGE_STAY:
