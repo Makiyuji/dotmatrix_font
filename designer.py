@@ -65,7 +65,6 @@ LIGHT_PURPLE = (216, 191, 216)
 # フォントの設定
 FONT_PATH = 'fonts/natumemozi.ttf'
 font1 = pygame.freetype.Font(FONT_PATH, 24)
-large_font = pygame.freetype.Font(FONT_PATH, 48)
 SAVE_MESSAGE_STAY = 1500
 
 # 参照用文字とデザイン用文字の表示位置
@@ -75,9 +74,6 @@ REF_CHAR_Y = WINDOW_HEIGHT - 40 - ROWS * LARGE_DOT_INTV
 # デザイン領域の設定
 DESIGN_CHAR_X = (2 * WINDOW_WIDTH // 3) - (COLS * LARGE_DOT_INTV // 2) + LARGE_MARGIN
 DESIGN_CHAR_Y = WINDOW_HEIGHT - 40 - ROWS * LARGE_DOT_INTV
-
-# DESIGN_CHAR_INDEXの初期化
-DESIGN_CHAR_INDEX = 0
 
 # 初期データの読み込みまたは初期化
 FONT_FILE = 'font.txt'
@@ -109,18 +105,18 @@ def set_design_char_data(index, data):
     font_data[index * ROWS:(index + 1) * ROWS] = data
 
 
-# 矢印アイコンの読み込み
+# 矢印アイコンの読み込みと配置
 arrow_image = pygame.image.load('images/right_arrow.png')
 arrow_rect = arrow_image.get_rect()
 arrow_rect.center = (WINDOW_WIDTH // 2,
                      REF_CHAR_Y + (ROWS * LARGE_DOT_INTV) // 2)
 
-# チェックマークアイコンの読み込み
+# チェックマークアイコンの読み込みと配置
 check_image = pygame.image.load('images/check.png')
 check_rect = check_image.get_rect()
 check_rect.center = (arrow_rect.centerx, arrow_rect.centery - arrow_rect.height)
 
-# 鉛筆アイコンの読み込み
+# 鉛筆アイコンの読み込みと配置
 pencil_image = pygame.image.load('images/pencil.png')
 pencil_rect = pencil_image.get_rect()
 pencil_rect.topleft = (DESIGN_CHAR_X + COLS * LARGE_DOT_INTV + 10,
@@ -128,7 +124,10 @@ pencil_rect.topleft = (DESIGN_CHAR_X + COLS * LARGE_DOT_INTV + 10,
 
 # 選択状態の初期化
 blue_selection = [0, 0]
-red_selection = [0, 0]
+red_selection = [1, 0]
+
+# DESIGN_CHAR_INDEXの初期化
+DESIGN_CHAR_INDEX = 1
 
 # デザイン用文字の一時データ
 design_char_data = font_data[DESIGN_CHAR_INDEX * ROWS:(DESIGN_CHAR_INDEX + 1) * ROWS]
@@ -312,12 +311,14 @@ while RUNNING:
     screen.blit(check_image, check_rect)
 
     # 現在選択されているコードの表示
-    ref_code = f"0x{CODE_START + blue_selection[1] * DISPLAY_COLS + blue_selection[0]:02X}"
-    design_code = f"0x{CODE_START + red_selection[1] * DISPLAY_COLS + red_selection[0]:02X}"
-    ref_code_surface, _ = font1.render(ref_code, BLACK, None)
-    design_code_surface, _ = font1.render(design_code, BLACK, None)
-    screen.blit(ref_code_surface, (REF_CHAR_X + 24, REF_CHAR_Y + ROWS * LARGE_DOT_INTV + 10))
-    screen.blit(design_code_surface, (DESIGN_CHAR_X + 24, DESIGN_CHAR_Y + ROWS * LARGE_DOT_INTV + 10))
+    ref_code = f"reference 0x{CODE_START + blue_selection[1] * DISPLAY_COLS + blue_selection[0]:02X}"
+    design_code = f"edit 0x{CODE_START + red_selection[1] * DISPLAY_COLS + red_selection[0]:02X}"
+    ref_code_surface, ref_code_rect = font1.render(ref_code, BLACK, None, size=20)
+    ref_code_rect.center = REF_CHAR_X + COLS * LARGE_DOT_INTV // 2, REF_CHAR_Y + ROWS * LARGE_DOT_INTV + 10
+    design_code_surface, design_code_rect = font1.render(design_code, BLACK, None, size=20)
+    design_code_rect.center = DESIGN_CHAR_X + COLS * LARGE_DOT_INTV // 2, DESIGN_CHAR_Y + ROWS * LARGE_DOT_INTV + 10
+    screen.blit(ref_code_surface, ref_code_rect)
+    screen.blit(design_code_surface, design_code_rect)
 
     # キーガイドの表示
     w_surface, _ = font1.render("W", BLACK, None)
@@ -342,7 +343,7 @@ while RUNNING:
     # 保存メッセージの表示
     if SAVE_MESSAGE_TIME and pygame.time.get_ticks() - SAVE_MESSAGE_TIME < SAVE_MESSAGE_STAY:
         save_message_surface, _ = font1.render("デザインをfont.txtに保存しました。",
-                                               BLACK, None)
+                                               BLACK, None, size=24)
         screen.blit(save_message_surface,
                     (WINDOW_WIDTH // 2 - save_message_surface.get_width() // 2, DESIGN_CHAR_Y - 40))
     else:
