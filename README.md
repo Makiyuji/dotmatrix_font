@@ -65,6 +65,7 @@ source .venv/bin/activate
 
 あとは、VS Codeが使用するPythonインタープリターを、この仮想環境に設定する。
 Pythonファイルを開いている状態で、ウィンドウの下部にPython 3.11.9 ('.venv': Poetry)と表示されていればOK。違う場合は、クリックして選択する。
+
 ![仮想環境の設定](images/vscode.png)
 
 ### poetryはないが、pyenvがインストールされている場合
