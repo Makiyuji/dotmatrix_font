@@ -149,34 +149,34 @@ while RUNNING:
                 DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
                 if DESIGN_CHAR_INDEX < CODE_LENGTH:
                     set_design_char_data(DESIGN_CHAR_INDEX, design_char_data)
-            elif event.key == pygame.K_w:
-                blue_selection[1] = (blue_selection[1] - 1) % DISPLAY_ROWS
-            elif event.key == pygame.K_s:
-                blue_selection[1] = (blue_selection[1] + 1) % DISPLAY_ROWS
-            elif event.key == pygame.K_a:
-                blue_selection[0] = (blue_selection[0] - 1) % DISPLAY_COLS
-            elif event.key == pygame.K_d:
-                blue_selection[0] = (blue_selection[0] + 1) % DISPLAY_COLS
-            elif event.key == pygame.K_UP:
-                red_selection[1] = (red_selection[1] - 1) % DISPLAY_ROWS
-                DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
-                if DESIGN_CHAR_INDEX < CODE_LENGTH:
-                    design_char_data = get_design_char_data(DESIGN_CHAR_INDEX)
-            elif event.key == pygame.K_DOWN:
-                red_selection[1] = (red_selection[1] + 1) % DISPLAY_ROWS
-                DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
-                if DESIGN_CHAR_INDEX < CODE_LENGTH:
-                    design_char_data = get_design_char_data(DESIGN_CHAR_INDEX)
-            elif event.key == pygame.K_LEFT:
-                red_selection[0] = (red_selection[0] - 1) % DISPLAY_COLS
-                DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
-                if DESIGN_CHAR_INDEX < CODE_LENGTH:
-                    design_char_data = get_design_char_data(DESIGN_CHAR_INDEX)
-            elif event.key == pygame.K_RIGHT:
-                red_selection[0] = (red_selection[0] + 1) % DISPLAY_COLS
-                DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
-                if DESIGN_CHAR_INDEX < CODE_LENGTH:
-                    design_char_data = get_design_char_data(DESIGN_CHAR_INDEX)
+            # elif event.key == pygame.K_w:
+            #     blue_selection[1] = (blue_selection[1] - 1) % DISPLAY_ROWS
+            # elif event.key == pygame.K_s:
+            #     blue_selection[1] = (blue_selection[1] + 1) % DISPLAY_ROWS
+            # elif event.key == pygame.K_a:
+            #     blue_selection[0] = (blue_selection[0] - 1) % DISPLAY_COLS
+            # elif event.key == pygame.K_d:
+            #     blue_selection[0] = (blue_selection[0] + 1) % DISPLAY_COLS
+            # elif event.key == pygame.K_UP:
+            #     red_selection[1] = (red_selection[1] - 1) % DISPLAY_ROWS
+            #     DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
+            #     if DESIGN_CHAR_INDEX < CODE_LENGTH:
+            #         design_char_data = get_design_char_data(DESIGN_CHAR_INDEX)
+            # elif event.key == pygame.K_DOWN:
+            #     red_selection[1] = (red_selection[1] + 1) % DISPLAY_ROWS
+            #     DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
+            #     if DESIGN_CHAR_INDEX < CODE_LENGTH:
+            #         design_char_data = get_design_char_data(DESIGN_CHAR_INDEX)
+            # elif event.key == pygame.K_LEFT:
+            #     red_selection[0] = (red_selection[0] - 1) % DISPLAY_COLS
+            #     DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
+            #     if DESIGN_CHAR_INDEX < CODE_LENGTH:
+            #         design_char_data = get_design_char_data(DESIGN_CHAR_INDEX)
+            # elif event.key == pygame.K_RIGHT:
+            #     red_selection[0] = (red_selection[0] + 1) % DISPLAY_COLS
+            #     DESIGN_CHAR_INDEX = red_selection[1] * DISPLAY_COLS + red_selection[0]
+            #     if DESIGN_CHAR_INDEX < CODE_LENGTH:
+            #         design_char_data = get_design_char_data(DESIGN_CHAR_INDEX)
             elif event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
                 SHIFT_PRESSED = True
         elif event.type == pygame.KEYUP:
