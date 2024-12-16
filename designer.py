@@ -233,26 +233,16 @@ while RUNNING:
             char_index = row * DISPLAY_COLS + col
             if char_index < CODE_LENGTH:
                 char_data = get_design_char_data(char_index)
+                color_set = WHITE, BLACK
+                if [col, row] == blue_selection and [col, row] == red_selection:
+                    color_set = LIGHT_PURPLE, PURPLE
+                elif [col, row] == blue_selection:
+                    color_set = LIGHT_BLUE, DARK_BLUE
+                elif [col, row] == red_selection:
+                    color_set = LIGHT_RED, DARK_RED
                 for r in range(ROWS):
                     for c in range(COLS):
-                        if char_data[r][c] == '1':
-                            if [col, row] == blue_selection and [col, row] == red_selection:
-                                color = PURPLE
-                            elif [col, row] == blue_selection:
-                                color = DARK_BLUE
-                            elif [col, row] == red_selection:
-                                color = DARK_RED
-                            else:
-                                color = BLACK
-                        else:
-                            if [col, row] == blue_selection and [col, row] == red_selection:
-                                color = LIGHT_PURPLE
-                            elif [col, row] == blue_selection:
-                                color = LIGHT_BLUE
-                            elif [col, row] == red_selection:
-                                color = LIGHT_RED
-                            else:
-                                color = WHITE
+                        color = color_set[int(char_data[r][c])]
                         x = col * DISPLAY_COL_INTV + c * SMALL_DOT_INTV + WINDOW_MARGIN
                         y = row * DISPLAY_ROW_INTV + r * SMALL_DOT_INTV + WINDOW_MARGIN
                         pygame.draw.rect(screen, color, (x, y, SMALL_DOT_SIZE, SMALL_DOT_SIZE))
