@@ -5,7 +5,7 @@ design and display dotmatrix font for pygame and Minecraft
 ドットマトリクスフォントをデザインし、pygameとMinecraftで表示する。
 
 ![app window](images/designer_v120.png)
-
+![LCD-FX-602P](images/LCD_sample2.png)
 ## 注意
 
 **「なつめもじ」フォントを利用しているが、再配布禁止のため、以下のページの一番下の＜＜「なつめもじ」をダウンロード＞＞というリンクからダウンロードすること。**
